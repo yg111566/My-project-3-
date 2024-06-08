@@ -43,6 +43,7 @@ public class Thielf1_walk_state : StateMachineBehaviour
         {
             animator.SetBool("iswalk", false);
             animator.SetBool("isback", false);
+            
             rigid.velocity = Vector2.zero;
         }
         thielf.Direction(thielf.player.position.x, Transform.position.x);
@@ -51,6 +52,6 @@ public class Thielf1_walk_state : StateMachineBehaviour
     //OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        thielf.atkDelay = thielf.atkCool;
+        
     }
 }

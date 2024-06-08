@@ -2,38 +2,44 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Thielf1_idle_state : StateMachineBehaviour
+public class Thielf1_ready_state : StateMachineBehaviour
 {
-    Transform Transform;
     Rigidbody2D rigid;
+    Transform transform;
     Thielf1 thielf;
+    public float followmin;
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         thielf = animator.GetComponent<Thielf1>();
-        Transform = animator.GetComponent<Transform>();
+        transform = animator.GetComponent<Transform>();
         rigid = animator.GetComponent<Rigidbody2D>();
-        rigid.constraints &= ~RigidbodyConstraints2D.FreezePositionX;
+        if (!animator.GetCurrentAnimatorStateInfo(0).IsName("Hit"))
+            rigid.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (Vector2.Distance(Transform.position, thielf.player.position) <= 4)
+        
+        if (thielf.atkDelay <= 0)
+        {
+            rigid.constraints &= ~RigidbodyConstraints2D.FreezePositionX;
+            animator.SetTrigger("atk");
+            thielf.atkDelay = thielf.atkCool;
+        }
+
+        if (Vector2.Distance(thielf.player.position, transform.position) > followmin&& animator.GetCurrentAnimatorStateInfo(0).IsName("Hit"))
         {
             animator.SetBool("iswalk", true);
-            return;
+            rigid.constraints &= ~RigidbodyConstraints2D.FreezePositionX;
         }
-        Vector2 homvec = rigid.transform.position;
-        if (Vector2.Distance(thielf.home, homvec) > 1f)
-            animator.SetBool("iswalk", true);
+        
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-
-        thielf.atkDelay = 0;
+        rigid.constraints &= ~RigidbodyConstraints2D.FreezePositionX;
     }
-
 }

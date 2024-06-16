@@ -22,7 +22,7 @@ public class CameraController : MonoBehaviour
         camHalfHeight = Camera.main.orthographicSize;
         camHalfWidth = camHalfHeight * Camera.main.aspect;
 
-        // Å¸ÀÏ¸ÊÀÇ °æ°è¸¦ °è»ê
+        //ì¹´ë©”ë¼ ë§µ ë°–ìœ¼ë¡œ ëª»ë‚˜ê°€ê²Œ
         tilemapBounds = tilemap.localBounds;
     }
     // Update is called once per frame

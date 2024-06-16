@@ -205,7 +205,6 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(invincibletime);
         isHurt = false;
     }
-
     private void OnTriggerStay2D(Collider2D other)
     {
         if(other.CompareTag("EnemyAtk"))
@@ -213,7 +212,7 @@ public class PlayerController : MonoBehaviour
             Hurt(other.GetComponentInParent<enemydmgbase>().Damage,other.transform.position);
         }
     }
-
+    
     private float AtkDashing()
     {
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("atk"))

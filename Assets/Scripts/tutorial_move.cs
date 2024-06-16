@@ -27,7 +27,8 @@ public class tutorial_move : MonoBehaviour
     {
         if(other.tag == "Player")
         {
-            Object.SetActive(false);
+            if(Object != null)
+                Object.SetActive(false);
         }
     }
 }

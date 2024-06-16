@@ -4,6 +4,7 @@ using System.Transactions;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -28,7 +29,10 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Animator anim;
 
+    public GameObject menuSet;
+    public GameObject effect;
 
+    public bool cansave = false;
 
     Color half = new Color(1,1,1,0.5f);
     Color full = new Color(1,1,1,1);
@@ -40,6 +44,9 @@ public class PlayerController : MonoBehaviour
     bool IsGround;
     private void Start()
     {
+        cansave = true;
+        GameSave();
+        cansave = false;
         defaultmoveSpeed = moveSpeed;
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
@@ -49,6 +56,18 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if(cansave && Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            Instantiate(effect, transform.position, transform.rotation);
+            GameSave();
+        }
+        if(Input.GetButtonDown("Cancel"))
+        {
+            if(menuSet.activeSelf)
+                menuSet.SetActive(false);
+            else
+                menuSet.SetActive(true);
+        }
         //대쉬
         if (Input.GetKeyDown(KeyCode.C) && dashtime <= 0)
         {
@@ -157,9 +176,10 @@ public class PlayerController : MonoBehaviour
             HP = HP - Damage;
             if(HP <= 0)
             {
-                //dead
+                
             }
-            else{
+            else
+            {
                 anim.SetTrigger("hurt");
                 float x = transform.position.x - pos.x;
                 if(x<0)
@@ -211,8 +231,20 @@ public class PlayerController : MonoBehaviour
         {
             Hurt(other.GetComponentInParent<enemydmgbase>().Damage,other.transform.position);
         }
+        if(other.CompareTag("save"))
+        {
+            cansave = true;
+        }
     }
     
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if(other.CompareTag("save"))
+        {
+            cansave = false;
+        }
+    }
+
     private float AtkDashing()
     {
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("atk"))
@@ -227,10 +259,34 @@ public class PlayerController : MonoBehaviour
             regener(value);
         }
     }
-
     private void regener(int value)
     {
         if(HP < maxHp)
             HP+=value;
+    }
+
+    public void GameSave()
+    {
+        if(cansave)
+        {
+            PlayerPrefs.SetFloat("test",0.5f);
+            PlayerPrefs.SetFloat("playerx",transform.position.x);
+            PlayerPrefs.SetFloat("playery",transform.position.y);
+            PlayerPrefs.SetString("scene",SceneManager.GetActiveScene().name);
+            PlayerPrefs.Save();
+        }
+    }
+
+    public void GameLoad()
+    {
+        SceneManager.LoadScene(PlayerPrefs.GetString("scene"));
+        float x = PlayerPrefs.GetFloat("playerx");
+        float y = PlayerPrefs.GetFloat("playery");
+        transform.position = new Vector3(x,y,0);
+    }
+
+    public void gameexit()
+    {
+        Application.Quit();
     }
 }

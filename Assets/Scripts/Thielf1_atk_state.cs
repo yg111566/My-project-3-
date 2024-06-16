@@ -16,6 +16,7 @@ public class Thielf1_atk_state : StateMachineBehaviour
             animator.SetTrigger("scready");
         else
             animator.SetTrigger("else");
+        thielf.Atkrange.SetActive(true);
     }
 
     //OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -29,6 +30,7 @@ public class Thielf1_atk_state : StateMachineBehaviour
     {
         thielf.atkDelay = thielf.atkCool;
         rigid.constraints &= ~RigidbodyConstraints2D.FreezePositionX;
+        thielf.Atkrange.SetActive(false);
     }
 }
 

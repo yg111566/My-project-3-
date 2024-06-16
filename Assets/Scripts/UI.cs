@@ -1,3 +1,4 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,13 +8,14 @@ public class UI : MonoBehaviour
 {
     [SerializeField]
     private Slider hpbar;
-    private float maxHp = 100;
-    private float curHp = 100;
+
+    PlayerController player;
 
     // Start is called before the first frame update
     void Start()
     {
-        hpbar.value = (float)curHp / (float)maxHp;
+        player = FindObjectOfType<PlayerController>();
+        hpbar.value = (float)player.HP / (float)player.maxHp;
     }
 
     // Update is called once per frame
@@ -24,6 +26,6 @@ public class UI : MonoBehaviour
 
     private void HandleHp()
     {
-        hpbar.value = Mathf.Lerp(hpbar.value,(float)curHp / (float)maxHp,Time.deltaTime * 10);
+        hpbar.value = Mathf.Lerp(hpbar.value,(float)player.HP / (float)player.maxHp,Time.deltaTime * 10);
     }
 }

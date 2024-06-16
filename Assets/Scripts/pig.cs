@@ -19,6 +19,8 @@ public class pig : MonoBehaviour
     public Vector2 size;
     private float value;
 
+    public GameObject Atkrange;
+
     public float atkCool = 1;
     public float atkDelay;
     // Start is called before the first frame update

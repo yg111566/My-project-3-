@@ -12,6 +12,7 @@ public class Pig_attack_state : StateMachineBehaviour
         pig = animator.GetComponent<pig>();
         pigrigid = animator.GetComponent <Rigidbody2D>();
         pigrigid.velocity = new Vector2(animator.GetFloat("Direction") * pig.speed * -10, pigrigid.velocity.y);
+        pig.Atkrange.SetActive(true);
     }
 
     //OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -25,5 +26,6 @@ public class Pig_attack_state : StateMachineBehaviour
     {
         pig.atkDelay = pig.atkCool;
         pigrigid.constraints &= ~RigidbodyConstraints2D.FreezePositionX;
+        pig.Atkrange.SetActive(false);
     }
 }

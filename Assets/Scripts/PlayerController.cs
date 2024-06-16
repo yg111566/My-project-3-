@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Transactions;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -10,6 +11,11 @@ public class PlayerController : MonoBehaviour
     public float JumpPower = 20;
     public float defaultmoveSpeed;
     public float moveSpeed = 7;
+
+    public float invincibletime = 1f;
+    public int regen = 2;
+    public int maxHp = 100;
+    public int HP = 100;
     public int additionalJumpCount = 3;
     public Transform pos;
     public float checkRadius;
@@ -23,6 +29,12 @@ public class PlayerController : MonoBehaviour
     private Animator anim;
 
 
+
+    Color half = new Color(1,1,1,0.5f);
+    Color full = new Color(1,1,1,1);
+    
+
+    bool isHurt;
     int Jumpcnt;
     bool IsDash = false;
     bool IsGround;
@@ -32,18 +44,18 @@ public class PlayerController : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        StartCoroutine(regeneration(regen));
     }
 
     private void Update()
     {
-        //¥ÎΩ¨
+        //ÎåÄÏâ¨
         if (Input.GetKeyDown(KeyCode.C) && dashtime <= 0)
         {
             IsDash = true;
         }
         if (dashtime <= defaultdashtime - 0.1)
         {
-            ChangeTransparency(1);
             moveSpeed = defaultmoveSpeed;
             rigid.constraints &= ~RigidbodyConstraints2D.FreezePositionY;
             if (IsDash)
@@ -53,7 +65,6 @@ public class PlayerController : MonoBehaviour
         {
             moveSpeed = dashspeed;
             rigid.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
-            ChangeTransparency(transparency);
         }
         dashtime -= Time.deltaTime;
         IsDash = false;
@@ -80,9 +91,9 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //≈∞ ¿‘∑¬
+        //ÌÇ§ ÏûÖÎ†•
         float hor = Input.GetAxis("Horizontal");
-        //«ÿ¥Á ¿ßƒ°∑Œ ¿Ãµø
+        //ÏúÑÏπò Ïù¥Îèô
         if(anim.GetCurrentAnimatorStateInfo(0).IsName("atk") && transform.eulerAngles.y == 180)
             rigid.velocity = new Vector2(AtkDashing(), rigid.velocity.y); 
         if(anim.GetCurrentAnimatorStateInfo(0).IsName("atk") && transform.eulerAngles.y == 0)
@@ -90,7 +101,7 @@ public class PlayerController : MonoBehaviour
         if (hor != 0)
             rigid.velocity = new Vector2(hor * moveSpeed + (hor * AtkDashing()), rigid.velocity.y);
         
-        //ƒ≥∏Ø≈Õ ∫∏¥¬ πÊ«‚ ¡∂¡§
+        //ÌöåÏ†Ñ
         if (hor > 0)
         {
             transform.eulerAngles = new Vector3(0, 180, 0);
@@ -101,7 +112,7 @@ public class PlayerController : MonoBehaviour
         }
         
         
-        //æ÷¥œ∏ﬁ¿Ãº«
+        //Ïï†ÎãàÎ©îÏù¥ÏÖò Ï≤òÎ¶¨
         if (hor != 0)
         {
             anim.SetBool("IsWalk", true);
@@ -137,10 +148,90 @@ public class PlayerController : MonoBehaviour
         Color newColor = new Color(currentColor.r, currentColor.g, currentColor.b, alpha);
         spriteRenderer.color = newColor;
     }
+
+    public void Hurt(int Damage, Vector2 pos)
+    {
+        if(!isHurt)
+        {
+            isHurt = true;
+            HP = HP - Damage;
+            if(HP <= 0)
+            {
+                //dead
+            }
+            else{
+                anim.SetTrigger("hurt");
+                float x = transform.position.x - pos.x;
+                if(x<0)
+                    x=1;
+                else
+                    x=-1;
+                
+                StartCoroutine(KnockBack(x));
+                StartCoroutine(HurtRoutine());
+                StartCoroutine(alphablink());
+            }
+        }
+    }
+
+    IEnumerator KnockBack(float dir)
+    {
+        float ctime = 0;
+        while(ctime<0.2f)
+        {
+            if(transform.rotation.y == 0)
+                transform.Translate(Vector2.left * moveSpeed * Time.deltaTime*dir);
+            else
+                transform.Translate(Vector2.left * moveSpeed * Time.deltaTime*dir*-1f);
+
+            ctime += Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    IEnumerator alphablink()
+    {
+        while(isHurt)
+        {
+            yield return new WaitForSeconds(0.1f);
+            spriteRenderer.color = half;
+            yield return new WaitForSeconds(0.1f);
+            spriteRenderer.color = full;
+        }
+    }
+
+    IEnumerator HurtRoutine()
+    {
+        yield return new WaitForSeconds(invincibletime);
+        isHurt = false;
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if(other.CompareTag("EnemyAtk"))
+        {
+            Hurt(other.GetComponentInParent<enemydmgbase>().Damage,other.transform.position);
+        }
+    }
+
     private float AtkDashing()
     {
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("atk"))
             return atkdash;
         return 1;
+    }
+
+    IEnumerator regeneration(int value)
+    {
+        while(true){
+            yield return new WaitForSeconds(5.0f);
+            regener(value);
+        }
+    }
+
+    private void regener(int value)
+    {
+        if(HP < maxHp)
+            HP+=value;
     }
 }

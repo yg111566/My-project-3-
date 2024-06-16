@@ -18,6 +18,7 @@ public class Thielf1 : MonoBehaviour
     public Vector2 size;
     private float value;
 
+    public GameObject Atkrange;
     public float atkCool = 2;
     public float atkDelay;
     // Start is called before the first frame update

@@ -33,10 +33,13 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Animator anim;
 
+    public Vector2 boxsize;
+
     public GameObject menuSet;
     public GameObject effect;
 
     public bool cansave = false;
+    
 
     Color half = new Color(1,1,1,0.5f);
     Color full = new Color(1,1,1,1);
@@ -57,6 +60,14 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        Collider2D[] collider2Ds = Physics2D.OverlapBoxAll(transform.position, boxsize, 0);
+            foreach (Collider2D collider in collider2Ds)
+            {
+                if (collider.CompareTag("Enemy") && Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    collider.SendMessage("TalkNpc",SendMessageOptions.DontRequireReceiver);
+                }
+            }
         maxHp = minHp + playerkillCount;
         if(HP>maxHp)
         {
@@ -67,6 +78,7 @@ public class PlayerController : MonoBehaviour
             Instantiate(effect, transform.position, transform.rotation);
             GameSave();
         }
+        
         if(Input.GetButtonDown("Cancel"))
         {
             if(menuSet.activeSelf)
@@ -250,6 +262,7 @@ public class PlayerController : MonoBehaviour
         if(other.CompareTag("save"))
         {
             cansave = true;
+            HP = maxHp;
         }
     }
     

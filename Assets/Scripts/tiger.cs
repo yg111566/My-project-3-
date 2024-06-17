@@ -7,16 +7,20 @@ public class tiger : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     public Animator anim;
     public Transform player;
-    public Transform pos;    public Rigidbody2D rigid;
+    public Transform pos;    
+    public Rigidbody2D rigid;
     public GameObject effect;
     public float defaultHp = 10;
     public float Hp = 10;
     public float speed;
     public Vector2 size;
     private float value;
+
+    NpcSentence chat;
     // Start is called before the first frame update
     void Start()
     {
+        chat = GetComponent<NpcSentence>();
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
@@ -29,10 +33,28 @@ public class tiger : MonoBehaviour
     }
     public void TakeDamage(float dmg)
     {
-        if (Hp > 0)
+        if (Hp > 3)
         {
             Instantiate(effect, transform.position, transform.rotation);
+            chat.HitNpc();
             Hp = Hp - 1;
+        }
+        else if (Hp <= 3 && Hp>1)
+        {
+            Instantiate(effect, transform.position, transform.rotation);
+            chat.HitNpc1();
+            Hp = Hp - 1;
+        }
+        else if (Hp == 1)
+        {
+            Instantiate(effect, transform.position, transform.rotation);
+            chat.HitNpc2();
+            Hp = Hp - 1;
+        }
+        
+        if(Hp <= 0)
+        {
+
         }
     }
 

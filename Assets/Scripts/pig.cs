@@ -23,12 +23,16 @@ public class pig : MonoBehaviour
 
     public float atkCool = 1;
     public float atkDelay;
+    public float exp;
+    private bool count = true;
+    PlayerController playerkill;
     // Start is called before the first frame update
     void Start()
     {
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        playerkill = FindObjectOfType<PlayerController>();
         respawnpos = GameObject.FindGameObjectWithTag("DieDummy").transform.position;
         home = transform.position;
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -39,6 +43,11 @@ public class pig : MonoBehaviour
         if(Hp <= 0 && !anim.GetCurrentAnimatorStateInfo(0).IsName("Die"))
         {
             anim.SetTrigger("Die");
+            if(count)
+            {
+                playerkill.killcount(exp);
+                count = false;
+            }
             Invoke("Revive",10);
         }
         if(Hp <= 0 && spriteRenderer.color.a <= 0.4)
@@ -91,6 +100,7 @@ public class pig : MonoBehaviour
         anim.SetTrigger("revive");
         transform.position = home;
         Hp = defaultHp;
+        count = true;
     }
     private void OnDrawGizmos()
     {

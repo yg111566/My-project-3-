@@ -17,16 +17,20 @@ public class Thielf1 : MonoBehaviour
     public Vector2 home;
     public Vector2 size;
     private float value;
-
+    private bool count = true;
+    PlayerController playerkill;
     public GameObject Atkrange;
     public float atkCool = 2;
     public float atkDelay;
+
+    public float exp;
     // Start is called before the first frame update
     void Start()
     {
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        playerkill = FindObjectOfType<PlayerController>();
         respawnpos = GameObject.FindGameObjectWithTag("DieDummy").transform.position;
         home = transform.position;
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -37,6 +41,11 @@ public class Thielf1 : MonoBehaviour
         if (Hp <= 0 && !anim.GetCurrentAnimatorStateInfo(0).IsName("Die"))
         {
             anim.SetTrigger("Die");
+            if(count)
+            {
+                playerkill.killcount(exp);
+                count = false;
+            }
             Invoke("Revive", 10);
         }
         if (Hp <= 0 && spriteRenderer.color.a <= 0.4)
@@ -89,6 +98,7 @@ public class Thielf1 : MonoBehaviour
         anim.SetTrigger("revive");
         transform.position = home;
         Hp = defaultHp;
+        count = true;
     }
     private void OnDrawGizmos()
     {

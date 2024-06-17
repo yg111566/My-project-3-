@@ -10,13 +10,17 @@ public class PlayerAttack : MonoBehaviour
     private Animator anim;
     private Rigidbody2D rigid;
     public float Damage = 3;
+    public float damage = 3;
+    
 
     private float meleeatktime;
     public float meleeCool = 0.5f;
     public Vector2 boxsize;
+    PlayerController player;
     // Start is called before the first frame update
     void Start()
     {
+        player = GetComponent<PlayerController>();
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
     }
@@ -24,7 +28,8 @@ public class PlayerAttack : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //¿ø°Å¸®°ø°Ý
+        //ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ï¿½
+        damage = Damage + player.playerkillCount;
         if (Input.GetKeyDown(KeyCode.A) && anim.GetBool("IsFire") == false && !anim.GetCurrentAnimatorStateInfo(0).IsName("atk"))
         {
             anim.SetBool("IsFire", true);
@@ -42,7 +47,7 @@ public class PlayerAttack : MonoBehaviour
                 {
                     if (collider.CompareTag("Enemy"))
                     {
-                        collider.SendMessage("TakeDamage",Damage,SendMessageOptions.DontRequireReceiver);
+                        collider.SendMessage("TakeDamage",damage,SendMessageOptions.DontRequireReceiver);
                     }
                 }
 

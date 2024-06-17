@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Transactions;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
+    public float playerkillCount = 0;
     public float transparency = 0.5f;
     public float JumpPower = 20;
     public float defaultmoveSpeed;
@@ -15,8 +17,10 @@ public class PlayerController : MonoBehaviour
 
     public float invincibletime = 1f;
     public int regen = 2;
-    public int maxHp = 100;
-    public int HP = 100;
+    public float maxHp = 100;
+    public float minHp = 100;
+    
+    public float HP = 100;
     public int additionalJumpCount = 3;
     public Transform pos;
     public float checkRadius;
@@ -37,16 +41,13 @@ public class PlayerController : MonoBehaviour
     Color half = new Color(1,1,1,0.5f);
     Color full = new Color(1,1,1,1);
     
-
+    
     bool isHurt;
     int Jumpcnt;
     bool IsDash = false;
     bool IsGround;
     private void Start()
     {
-        cansave = true;
-        GameSave();
-        cansave = false;
         defaultmoveSpeed = moveSpeed;
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
@@ -56,6 +57,11 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        maxHp = minHp + playerkillCount;
+        if(HP>maxHp)
+        {
+            HP = maxHp;
+        }
         if(cansave && Input.GetKeyDown(KeyCode.DownArrow))
         {
             Instantiate(effect, transform.position, transform.rotation);
@@ -64,9 +70,15 @@ public class PlayerController : MonoBehaviour
         if(Input.GetButtonDown("Cancel"))
         {
             if(menuSet.activeSelf)
+            {
                 menuSet.SetActive(false);
+                Time.timeScale = 1;
+            }
             else
+            {
                 menuSet.SetActive(true);
+                Time.timeScale = 0;
+            }
         }
         //대쉬
         if (Input.GetKeyDown(KeyCode.C) && dashtime <= 0)
@@ -168,6 +180,10 @@ public class PlayerController : MonoBehaviour
         spriteRenderer.color = newColor;
     }
 
+    public void killcount(float value)
+    {
+        playerkillCount += value;
+    }
     public void Hurt(int Damage, Vector2 pos)
     {
         if(!isHurt)
@@ -176,7 +192,7 @@ public class PlayerController : MonoBehaviour
             HP = HP - Damage;
             if(HP <= 0)
             {
-                
+                StartCoroutine(HurtRoutine());
             }
             else
             {
@@ -269,22 +285,25 @@ public class PlayerController : MonoBehaviour
     {
         if(cansave)
         {
-            PlayerPrefs.SetFloat("test",0.5f);
-            PlayerPrefs.SetFloat("playerx",transform.position.x);
-            PlayerPrefs.SetFloat("playery",transform.position.y);
-            PlayerPrefs.SetString("scene",SceneManager.GetActiveScene().name);
-            PlayerPrefs.Save();
+            SaveData save = new SaveData();
+            save.HP = HP;
+            save.x = transform.position.x;
+            save.y = transform.position.y;
+            SaveManager.Save(save);
         }
     }
 
     public void GameLoad()
     {
-        SceneManager.LoadScene(PlayerPrefs.GetString("scene"));
-        float x = PlayerPrefs.GetFloat("playerx");
-        float y = PlayerPrefs.GetFloat("playery");
-        transform.position = new Vector3(x,y,0);
+        Time.timeScale = 1;
+        SaveData save = SaveManager.Load();
+        HP = save.HP;
+        transform.position = new Vector3(save.x,save.y,0);
     }
 
+    public void resume(){
+        Time.timeScale = 1;
+    }
     public void gameexit()
     {
         Application.Quit();

@@ -8,23 +8,28 @@ public class bullet : MonoBehaviour
     public float speed;
     public float distance;
     public float Damage;
-    public LayerMask isLayer;
 
+    public float damage;
+    public LayerMask isLayer;
+    PlayerController player;
+    
     // Start is called before the first frame update
     void Start()
     {
+        player = FindObjectOfType<PlayerController>();
         Invoke("DestroyBullet", 2);
     }
 
     // Update is called once per frame
     void Update()
     {
+        damage = Damage + player.playerkillCount;
         RaycastHit2D ray = Physics2D.Raycast(transform.position, transform.right, distance, isLayer);
         if(ray.collider !=  null)
         {
             if (ray.collider.tag == "Enemy")
             {
-                ray.collider.SendMessage("TakeDamage", Damage, SendMessageOptions.DontRequireReceiver);
+                ray.collider.SendMessage("TakeDamage", damage, SendMessageOptions.DontRequireReceiver);
             }
             DestroyBullet();
         }

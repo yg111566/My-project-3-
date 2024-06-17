@@ -11,12 +11,12 @@ public class CameraController : MonoBehaviour
     public float Camerarepair = 3f;
     public float slowTime = 0.1f;
     private Vector3 velocity = Vector3.zero;
-    public Tilemap tilemap; 
+    public Tilemap tilemap;
 
     private float camHalfHeight;
     private float camHalfWidth;
 
-    private Bounds tilemapBounds;
+    public Bounds tilemapBounds;
     void Start()
     {
         camHalfHeight = Camera.main.orthographicSize;

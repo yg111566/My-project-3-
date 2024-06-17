@@ -10,7 +10,8 @@ public class tiger : MonoBehaviour
     public Transform pos;    
     public Rigidbody2D rigid;
     public GameObject effect;
-    public float defaultHp = 10;
+    public GameObject TigerBoss;
+    public float defaultHp = 1000;
     public float Hp = 10;
     public float speed;
     public Vector2 size;
@@ -52,9 +53,10 @@ public class tiger : MonoBehaviour
             Hp = Hp - 1;
         }
         
-        if(Hp <= 0)
+        else if(Hp <= 0)
         {
-
+            //Instantiate(TigerBoss, transform.position, transform.rotation);
+            Destroy(gameObject);
         }
     }
 

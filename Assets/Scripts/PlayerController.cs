@@ -16,7 +16,6 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 7;
 
     public float invincibletime = 1f;
-    public int regen = 2;
     public float maxHp = 100;
     public float minHp = 100;
     
@@ -55,7 +54,7 @@ public class PlayerController : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        StartCoroutine(regeneration(regen));
+        StartCoroutine(regeneration());
     }
 
     private void Update()
@@ -281,17 +280,17 @@ public class PlayerController : MonoBehaviour
         return 1;
     }
 
-    IEnumerator regeneration(int value)
+    IEnumerator regeneration()
     {
         while(true){
             yield return new WaitForSeconds(5.0f);
-            regener(value);
+            regener();
         }
     }
-    private void regener(int value)
+    private void regener()
     {
         if(HP < maxHp)
-            HP+=value;
+            HP+= (maxHp/10);
     }
 
     public void GameSave()

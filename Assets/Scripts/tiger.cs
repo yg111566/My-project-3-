@@ -17,6 +17,7 @@ public class tiger : MonoBehaviour
     public Vector2 size;
     private float value;
 
+
     NpcSentence chat;
     // Start is called before the first frame update
     void Start()
@@ -55,7 +56,7 @@ public class tiger : MonoBehaviour
         
         else if(Hp <= 0)
         {
-            //Instantiate(TigerBoss, transform.position, transform.rotation);
+            Instantiate(TigerBoss, transform.position, transform.rotation);
             Destroy(gameObject);
         }
     }

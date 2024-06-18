@@ -34,7 +34,9 @@ public class PlayerController : MonoBehaviour
 
     public Vector2 boxsize;
 
+    public GameObject[] Boss;
     public GameObject menuSet;
+    public GameObject Dead;
     public GameObject effect;
 
     public bool cansave = false;
@@ -71,6 +73,11 @@ public class PlayerController : MonoBehaviour
         if(HP>maxHp)
         {
             HP = maxHp;
+        }
+        if(HP<=0)
+        {
+            Dead.SetActive(true);
+            Invoke("gameexit",3);    
         }
         if(cansave && Input.GetKeyDown(KeyCode.DownArrow))
         {
@@ -252,6 +259,15 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(invincibletime);
         isHurt = false;
     }
+
+    private void  OnTriggerEnter2D(Collider2D other)
+    {
+        if(other.CompareTag("EnemyAtk"))
+        {
+            Hurt(other.GetComponentInParent<enemydmgbase>().Damage,other.transform.position);
+        }
+    }
+
     private void OnTriggerStay2D(Collider2D other)
     {
         if(other.CompareTag("EnemyAtk"))
@@ -301,6 +317,7 @@ public class PlayerController : MonoBehaviour
             save.HP = HP;
             save.x = transform.position.x;
             save.y = transform.position.y;
+            save.exp = playerkillCount;
             SaveManager.Save(save);
         }
     }
@@ -310,6 +327,7 @@ public class PlayerController : MonoBehaviour
         Time.timeScale = 1;
         SaveData save = SaveManager.Load();
         HP = save.HP;
+        playerkillCount = save.exp;
         transform.position = new Vector3(save.x,save.y,0);
     }
 

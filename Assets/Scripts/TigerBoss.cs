@@ -17,14 +17,16 @@ public class TigerBoss : MonoBehaviour
     private float value;
     private bool count = true;
     PlayerController playerkill;
-    public GameObject Atkrange;
+    public GameObject Biterange;
+    public GameObject Punchrange;
     public float atkCool = 3;
     public float atkDelay;
-
+    public int pattern;
     public float exp = 20;
     // Start is called before the first frame update
     void Start()
     {
+        pattern = 1;
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
@@ -34,27 +36,21 @@ public class TigerBoss : MonoBehaviour
 
     private void Update()
     {
-        if (Hp <= 0 && !anim.GetCurrentAnimatorStateInfo(0).IsName("Die"))
+        if (Hp <= 0)
         {
-            anim.SetTrigger("Die");
             if(count)
             {
                 playerkill.killcount(exp);
                 count = false;
             }
-            Invoke("Revive", 10);
+            Destroy(gameObject);
         }
-        if (Hp <= 0 && spriteRenderer.color.a <= 0.4)
+        if(atkDelay > 0)
+            pattern = Random.Range(1,3);
         if (atkDelay >= 0)
             atkDelay -= Time.deltaTime;
-        if (spriteRenderer.color.a < 1)
-        {
-            value = spriteRenderer.color.a;
-            value += Time.deltaTime;
-            value = Mathf.Clamp01(value);
-            ChangeTransparency(value);
-        }
     }
+
 
     public void Direction(float Target, float baseobj)
     {
@@ -73,17 +69,23 @@ public class TigerBoss : MonoBehaviour
     {
         if (Hp > 0)
         {
-            rigid.constraints &= ~RigidbodyConstraints2D.FreezePositionX;
-            ChangeTransparency(0.3f);
             Instantiate(effect, transform.position, transform.rotation);
             Hp = Hp - dmg;
         }
     }
 
-    void ChangeTransparency(float alpha)
-    {
-        Color currentColor = spriteRenderer.color;
-        Color newColor = new Color(currentColor.r, currentColor.g, currentColor.b, alpha);
-        spriteRenderer.color = newColor;
+    public void punch(){
+        Punchrange.SetActive(true);
     }
+    public void removepunch(){
+        Punchrange.SetActive(false);
+    }
+    
+    public void bite(){
+        Biterange.SetActive(true);
+    }
+    public void removebite(){
+        Biterange.SetActive(false);
+    }
+    
 }

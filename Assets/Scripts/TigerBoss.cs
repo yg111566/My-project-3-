@@ -43,6 +43,7 @@ public class TigerBoss : MonoBehaviour
                 playerkill.killcount(exp);
                 count = false;
             }
+            playerkill.killtiger = true;
             Destroy(gameObject);
         }
         if(atkDelay > 0)

@@ -17,6 +17,7 @@ public class tiger : MonoBehaviour
     public Vector2 size;
     private float value;
 
+    PlayerController playerkill;
 
     NpcSentence chat;
     // Start is called before the first frame update
@@ -26,12 +27,14 @@ public class tiger : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        playerkill = GameObject.FindObjectOfType<PlayerController>();
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void Update()
     {
-        
+        if(playerkill.killtiger == true)
+            Destroy(gameObject);
     }
     public void TakeDamage(float dmg)
     {

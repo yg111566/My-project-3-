@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Transactions;
+using TMPro;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEditor;
@@ -32,12 +33,18 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Animator anim;
 
+
     public Vector2 boxsize;
 
-    public GameObject[] Boss;
+    public GameObject StartSet;
+    public GameObject Prologue;
     public GameObject menuSet;
     public GameObject Dead;
     public GameObject effect;
+
+    public bool killtiger;
+
+    tiger tiger;
 
     public bool cansave = false;
     
@@ -52,11 +59,14 @@ public class PlayerController : MonoBehaviour
     bool IsGround;
     private void Start()
     {
+        Time.timeScale = 0;
+        killtiger = false;
         defaultmoveSpeed = moveSpeed;
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         StartCoroutine(regeneration());
+        tiger = FindObjectOfType<tiger>();
     }
 
     private void Update()
@@ -318,6 +328,7 @@ public class PlayerController : MonoBehaviour
             save.x = transform.position.x;
             save.y = transform.position.y;
             save.exp = playerkillCount;
+            save.tiger = killtiger;
             SaveManager.Save(save);
         }
     }
@@ -328,7 +339,9 @@ public class PlayerController : MonoBehaviour
         SaveData save = SaveManager.Load();
         HP = save.HP;
         playerkillCount = save.exp;
+        killtiger = save.tiger;
         transform.position = new Vector3(save.x,save.y,0);
+        StartSet.SetActive(false);
     }
 
     public void resume(){
@@ -337,5 +350,9 @@ public class PlayerController : MonoBehaviour
     public void gameexit()
     {
         Application.Quit();
+    }
+    public void prologue()
+    {
+        Prologue.SetActive(true);
     }
 }

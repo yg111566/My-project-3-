@@ -9,5 +9,5 @@ public class SaveData
     public float x;
     public float exp;
     public float y;
-    public String Scenemanage;
+    public bool tiger;
 }
